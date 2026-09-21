@@ -1,8 +1,8 @@
 function Error() {
   return (
-    <p className="error">
+    <div className="error">
       <span>💥</span> There was an error fecthing questions.
-    </p>
+    </div>
   );
 }
 
