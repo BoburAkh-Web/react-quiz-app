@@ -12,7 +12,8 @@ import Footer from "./Footer";
 import Timer from "./Timer";
 import { supabase } from "./supabase";
 import AddQuestions from "./AddQuestions";
-
+const isAdminMode =
+  new URLSearchParams(window.location.search).get("admin") === "true";
 const SECS_PER_QUESTION = 30;
 
 const initialState = {
@@ -129,13 +130,29 @@ function App() {
 
   return (
     <div className="app">
-      <button
-        className="btn btn-ui"
-        style={{ position: "fixed", top: "20px", right: "20px", zIndex: 1000 }}
-        onClick={() => setShowAdmin((show) => !show)}
-      >
-        {showAdmin ? "🏠 Testga qaytish" : "⚙️ Admin Panel"}
-      </button>
+      {isAdminMode && (
+        <button
+          className="btn btn-ui"
+          style={{
+            position: "fixed",
+            top: "20px",
+            right: "20px",
+            zIndex: 1000,
+          }}
+          onClick={() => {
+            if (!showAdmin) {
+              const password = window.prompt("Admin parolini kiriting:");
+              if (password !== "bobur1558") {
+                alert("Parol noto'g'ri!");
+                return;
+              }
+            }
+            setShowAdmin((show) => !show);
+          }}
+        >
+          {showAdmin ? "🏠 Testga qaytish" : "⚙️ Admin Panel"}
+        </button>
+      )}
 
       <Header />
 
