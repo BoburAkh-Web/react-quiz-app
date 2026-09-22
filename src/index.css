@@ -18,8 +18,9 @@
 
 html {
   font-size: 62.5%;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
 body {
@@ -217,8 +218,8 @@ progress {
 .loader {
   width: 50px;
   height: 24px;
-  background: radial-gradient(circle closest-side, currentColor 90%, #0000) 0%
-      50%,
+  background:
+    radial-gradient(circle closest-side, currentColor 90%, #0000) 0% 50%,
     radial-gradient(circle closest-side, currentColor 90%, #0000) 50% 50%,
     radial-gradient(circle closest-side, currentColor 90%, #0000) 100% 50%;
   background-size: calc(100% / 3) 12px;
@@ -228,16 +229,28 @@ progress {
 
 @keyframes loader {
   20% {
-    background-position: 0% 0%, 50% 50%, 100% 50%;
+    background-position:
+      0% 0%,
+      50% 50%,
+      100% 50%;
   }
   40% {
-    background-position: 0% 100%, 50% 0%, 100% 50%;
+    background-position:
+      0% 100%,
+      50% 0%,
+      100% 50%;
   }
   60% {
-    background-position: 0% 50%, 50% 100%, 100% 0%;
+    background-position:
+      0% 50%,
+      50% 100%,
+      100% 0%;
   }
   80% {
-    background-position: 0% 50%, 50% 50%, 100% 100%;
+    background-position:
+      0% 50%,
+      50% 50%,
+      100% 100%;
   }
 }
 
@@ -256,4 +269,50 @@ progress {
 .counter * {
   font-size: inherit;
   padding: 0.8rem;
+}
+
+/* --- Admin Panel Form Styles --- */
+.add-question-container {
+  background-color: var(--color-darkline);
+  padding: 2.4rem;
+  border-radius: 7px;
+  max-width: 50rem;
+  margin: 3rem auto;
+}
+
+.add-question-container h2 {
+  font-size: 2rem;
+  margin-bottom: 1.6rem;
+  text-align: center;
+}
+
+.add-question-container form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  font-size: 1.4rem;
+  font-weight: 500;
+  text-align: left;
+}
+
+.add-question-container input,
+.add-question-container select,
+.add-question-container textarea {
+  font-family: inherit;
+  font-size: 1.4rem;
+  padding: 1rem 1.4rem;
+  border-radius: 100px;
+  border: none;
+  background-color: var(--color-light);
+  color: var(--color-darkest);
+  margin-bottom: 1.2rem;
+}
+
+.add-question-container textarea {
+  border-radius: 12px;
+  resize: vertical;
+}
+
+.add-question-container select {
+  cursor: pointer;
 }
