@@ -47,6 +47,22 @@ function AddQuestions({ onQuestionAdded }) {
 
     if (onQuestionAdded) onQuestionAdded();
   }
+  async function handleClearAll() {
+    const confirmClear = window.confirm(
+      "Diqqat! Barcha savollar butunlay o'chiriladi va qaytarib bo'lmaydi. Davom etasizmi?",
+    );
+    if (!confirmClear) return;
+
+    const { error } = await supabase.from("questions").delete().neq("id", 0);
+
+    if (error) {
+      alert("O'chirishda xatolik: " + error.message);
+      return;
+    }
+
+    alert("Barcha savollar o'chirildi! 🗑️");
+    if (onQuestionAdded) onQuestionAdded();
+  }
   return (
     <div
       className="add-question-container"
@@ -132,6 +148,13 @@ function AddQuestions({ onQuestionAdded }) {
           {loading ? "Saqlanmoqda..." : "Savolni Bazaga Qo'shish"}
         </button>
       </form>
+      <button
+        className="btn btn-ui"
+        style={{ marginTop: "20px", backgroundColor: "#e74c3c" }}
+        onClick={handleClearAll}
+      >
+        🗑️ Barcha savollarni o'chirish
+      </button>
     </div>
   );
 }

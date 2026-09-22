@@ -302,9 +302,9 @@ progress {
   font-size: 1.4rem;
   padding: 1rem 1.4rem;
   border-radius: 100px;
-  border: none;
+  border: 1px white;
   background-color: var(--color-light);
-  color: var(--color-darkest);
+  color: rgb(145, 143, 143);
   margin-bottom: 1.2rem;
 }
 
@@ -315,4 +315,5 @@ progress {
 
 .add-question-container select {
   cursor: pointer;
+  border: 1px white;
 }
