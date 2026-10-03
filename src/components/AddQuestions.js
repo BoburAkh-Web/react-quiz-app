@@ -1,28 +1,65 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { supabase } from "./supabase";
+
+const LETTERS = ["A", "B", "C", "D"];
+const POINT_PRESETS = [5, 10, 15, 20];
+const EMPTY_OPTIONS = ["", "", "", ""];
+
 function AddQuestions({ onQuestionAdded }) {
   const [question, setQuestion] = useState("");
-  const [option1, setOption1] = useState("");
-  const [option2, setOption2] = useState("");
-  const [option3, setOption3] = useState("");
-  const [option4, setOption4] = useState("");
+  const [options, setOptions] = useState(EMPTY_OPTIONS);
   const [correctOption, setCorrectOption] = useState(0);
   const [points, setPoints] = useState(10);
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(null); // { type: "success" | "error", text }
+
+  const questionRef = useRef(null);
+  const optionRefs = useRef([]);
+
+  // Muvaffaqiyat xabari bir necha soniyadan keyin yo'qoladi
+  useEffect(() => {
+    if (message?.type !== "success") return;
+    const id = setTimeout(() => setMessage(null), 3000);
+    return () => clearTimeout(id);
+  }, [message]);
+
+  function handleOptionChange(i, value) {
+    setOptions((opts) => opts.map((opt, j) => (j === i ? value : opt)));
+    setMessage(null);
+  }
+
+  // Variantda Enter bosilsa keyingi variantga o'tish (oxirgisida forma yuboriladi)
+  function handleOptionKeyDown(e, i) {
+    if (e.key !== "Enter" || i === options.length - 1) return;
+    e.preventDefault();
+    optionRefs.current[i + 1]?.focus();
+  }
+
+  function validate() {
+    if (!question.trim()) return "Savol matnini kiriting";
+    if (options.some((opt) => !opt.trim()))
+      return "Barcha 4 ta variantni to'ldiring";
+    const normalized = options.map((opt) => opt.trim().toLowerCase());
+    if (new Set(normalized).size !== normalized.length)
+      return "Variantlar bir-biridan farq qilishi kerak";
+    if (!(Number(points) > 0)) return "Ball 0 dan katta bo'lishi kerak";
+    return null;
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
 
-    if (!question || !option1 || !option2 || !option3 || !option4) {
-      alert("Iltimos, barcha maydonlarni to'ldiring!");
+    const validationError = validate();
+    if (validationError) {
+      setMessage({ type: "error", text: validationError });
       return;
     }
 
     setLoading(true);
 
     const newQuestion = {
-      question,
-      options: [option1, option2, option3, option4],
+      question: question.trim(),
+      options: options.map((opt) => opt.trim()),
       correctOption: Number(correctOption),
       points: Number(points),
     };
@@ -32,21 +69,20 @@ function AddQuestions({ onQuestionAdded }) {
     setLoading(false);
 
     if (error) {
-      alert("Xatolik: " + error.message);
+      setMessage({ type: "error", text: "Xatolik: " + error.message });
       return;
     }
 
-    alert("Yangi savol muvaffaqiyatli qo'shildi! 🎉");
+    setMessage({ type: "success", text: "Savol muvaffaqiyatli qo'shildi! 🎉" });
     setQuestion("");
-    setOption1("");
-    setOption2("");
-    setOption3("");
-    setOption4("");
+    setOptions(EMPTY_OPTIONS);
     setCorrectOption(0);
     setPoints(10);
+    questionRef.current?.focus();
 
     if (onQuestionAdded) onQuestionAdded();
   }
+
   async function handleClearAll() {
     const confirmClear = window.confirm(
       "Diqqat! Barcha savollar butunlay o'chiriladi va qaytarib bo'lmaydi. Davom etasizmi?",
@@ -56,105 +92,122 @@ function AddQuestions({ onQuestionAdded }) {
     const { error } = await supabase.from("questions").delete().neq("id", 0);
 
     if (error) {
-      alert("O'chirishda xatolik: " + error.message);
+      setMessage({
+        type: "error",
+        text: "O'chirishda xatolik: " + error.message,
+      });
       return;
     }
 
-    alert("Barcha savollar o'chirildi! 🗑️");
+    setMessage({ type: "success", text: "Barcha savollar o'chirildi! 🗑️" });
     if (onQuestionAdded) onQuestionAdded();
   }
+
   return (
-    <div
-      className="add-question-container"
-      style={{ margin: "20px 0", textAlign: "left" }}
-    >
-      <h2>➕ Yangi Savol Qo'shish (Admin Panel)</h2>
-      <form
-        onSubmit={handleSubmit}
-        style={{ display: "flex", flexDirection: "column", gap: "10px" }}
-      >
-        <label>
-          Savol matni:
-          <input
-            type="text"
-            className="btn"
-            style={{ width: "100%", textTransform: "none" }}
+    <div className="add-question">
+      <form className="aq-card" onSubmit={handleSubmit}>
+        <h2 className="aq-title">Yangi savol qo'shish</h2>
+
+        <div className="aq-field">
+          <label className="aq-label" htmlFor="aq-question">
+            Savol matni
+          </label>
+          <textarea
+            id="aq-question"
+            ref={questionRef}
+            className="aq-input aq-textarea"
+            rows={3}
+            placeholder="Masalan: JavaScript'da qaysi kalit so'z o'zgarmas o'zgaruvchi e'lon qiladi?"
             value={question}
-            onChange={(e) => setQuestion(e.target.value)}
+            onChange={(e) => {
+              setQuestion(e.target.value);
+              setMessage(null);
+            }}
           />
-        </label>
+        </div>
 
-        <label>Variant 1 (Indeks 0):</label>
-        <input
-          type="text"
-          className="btn"
-          style={{ textTransform: "none" }}
-          value={option1}
-          onChange={(e) => setOption1(e.target.value)}
-        />
+        <div className="aq-field">
+          <span className="aq-label">
+            Variantlar
+            <span className="aq-hint">
+              To'g'ri javobni chapdagi harfni bosib belgilang
+            </span>
+          </span>
 
-        <label>Variant 2 (Indeks 1):</label>
-        <input
-          type="text"
-          className="btn"
-          style={{ textTransform: "none" }}
-          value={option2}
-          onChange={(e) => setOption2(e.target.value)}
-        />
+          <div className="aq-options">
+            {options.map((opt, i) => (
+              <div
+                key={LETTERS[i]}
+                className={`aq-option ${correctOption === i ? "correct" : ""}`}
+              >
+                <button
+                  type="button"
+                  className="aq-letter"
+                  title="To'g'ri javob sifatida belgilash"
+                  aria-pressed={correctOption === i}
+                  onClick={() => setCorrectOption(i)}
+                >
+                  {correctOption === i ? "✓" : LETTERS[i]}
+                </button>
+                <input
+                  ref={(el) => (optionRefs.current[i] = el)}
+                  className="aq-option-input"
+                  type="text"
+                  placeholder={`${LETTERS[i]} variant`}
+                  value={opt}
+                  onChange={(e) => handleOptionChange(i, e.target.value)}
+                  onKeyDown={(e) => handleOptionKeyDown(e, i)}
+                />
+                {correctOption === i && (
+                  <span className="aq-correct-tag">To'g'ri</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
 
-        <label>Variant 3 (Indeks 2):</label>
-        <input
-          type="text"
-          className="btn"
-          style={{ textTransform: "none" }}
-          value={option3}
-          onChange={(e) => setOption3(e.target.value)}
-        />
+        <div className="aq-field">
+          <span className="aq-label">Ball</span>
+          <div className="aq-points">
+            {POINT_PRESETS.map((p) => (
+              <button
+                key={p}
+                type="button"
+                className={`aq-chip ${Number(points) === p ? "active" : ""}`}
+                onClick={() => setPoints(p)}
+              >
+                {p}
+              </button>
+            ))}
+            <input
+              className="aq-input aq-points-input"
+              type="number"
+              min={1}
+              value={points}
+              onChange={(e) => setPoints(e.target.value)}
+              aria-label="Boshqa ball"
+            />
+          </div>
+        </div>
 
-        <label>Variant 4 (Indeks 3):</label>
-        <input
-          type="text"
-          className="btn"
-          style={{ textTransform: "none" }}
-          value={option4}
-          onChange={(e) => setOption4(e.target.value)}
-        />
+        {message && (
+          <p className={`aq-message ${message.type}`}>{message.text}</p>
+        )}
 
-        <label>
-          To'g'ri variant indeksi (0, 1, 2 yoki 3):
-          <select
-            className="btn"
-            value={correctOption}
-            onChange={(e) => setCorrectOption(e.target.value)}
-          >
-            <option value={0}>Variant 1 (Indeks 0)</option>
-            <option value={1}>Variant 2 (Indeks 1)</option>
-            <option value={2}>Variant 3 (Indeks 2)</option>
-            <option value={3}>Variant 4 (Indeks 3)</option>
-          </select>
-        </label>
-
-        <label>
-          Balla (Points):
-          <input
-            type="number"
-            className="btn"
-            value={points}
-            onChange={(e) => setPoints(e.target.value)}
-          />
-        </label>
-
-        <button type="submit" className="btn btn-ui" disabled={loading}>
-          {loading ? "Saqlanmoqda..." : "Savolni Bazaga Qo'shish"}
+        <button type="submit" className="aq-submit" disabled={loading}>
+          {loading ? "Saqlanmoqda..." : "➕ Savolni qo'shish"}
         </button>
       </form>
-      <button
-        className="btn btn-ui"
-        style={{ marginTop: "20px", backgroundColor: "#e74c3c" }}
-        onClick={handleClearAll}
-      >
-        🗑️ Barcha savollarni o'chirish
-      </button>
+
+      <div className="aq-danger">
+        <div>
+          <strong>Xavfli zona</strong>
+          <p>Bazadagi barcha savollar butunlay o'chiriladi.</p>
+        </div>
+        <button type="button" className="aq-danger-btn" onClick={handleClearAll}>
+          🗑️ Hammasini o'chirish
+        </button>
+      </div>
     </div>
   );
 }
