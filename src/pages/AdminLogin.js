@@ -1,11 +1,20 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import AuthBackground from "../components/AuthBackground";
+import PasswordInput from "../components/PasswordInput";
+import {
+  ShieldIcon,
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  AlertIcon,
+} from "../components/AuthIcons";
 
 const ADMIN_PASSWORD = "bobur1558";
 
 function AdminLogin() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isShaking, setIsShaking] = useState(false);
 
   const navigate = useNavigate();
 
@@ -14,6 +23,7 @@ function AdminLogin() {
 
     if (password !== ADMIN_PASSWORD) {
       setError("Parol noto'g'ri!");
+      setIsShaking(true);
       return;
     }
 
@@ -22,29 +32,68 @@ function AdminLogin() {
   }
 
   return (
-    <div className="admin-login-page">
-      <h2>⚙️ Admin Panel</h2>
+    <div className="auth-page auth-page--admin">
+      <AuthBackground />
 
-      <form onSubmit={handleSubmit}>
-        <div className="row">
-          <label htmlFor="admin-password">Admin paroli</label>
-          <input
-            id="admin-password"
-            type="password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setError("");
-            }}
-          />
+      <div className="auth-card">
+        <div className="auth-badge">
+          <ShieldIcon />
         </div>
 
-        {error && <p className="error">{error}</p>}
+        <div className="auth-pill-row">
+          <span className="auth-pill">
+            <span className="auth-pill-dot" />
+            Himoyalangan hudud
+          </span>
+        </div>
 
-        <button type="submit" disabled={!password}>
-          Kirish
-        </button>
-      </form>
+        <h2 className="auth-title">Admin Panel</h2>
+        <p className="auth-subtitle">
+          Savollar va natijalarni boshqarish uchun admin parolini kiriting
+        </p>
+
+        <form
+          className={`auth-form ${isShaking ? "auth-shake" : ""}`}
+          onSubmit={handleSubmit}
+          onAnimationEnd={() => setIsShaking(false)}
+        >
+          <div className="auth-field">
+            <label className="auth-label" htmlFor="admin-password">
+              Admin paroli
+            </label>
+            <PasswordInput
+              id="admin-password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError("");
+              }}
+              placeholder="••••••••"
+              autoComplete="current-password"
+              autoFocus
+            />
+          </div>
+
+          {error && (
+            <p className="auth-error" role="alert">
+              <AlertIcon />
+              {error}
+            </p>
+          )}
+
+          <button type="submit" className="auth-submit" disabled={!password}>
+            Kirish
+            <ArrowRightIcon />
+          </button>
+        </form>
+
+        <p className="auth-footer">
+          <Link to="/" className="auth-link auth-link--back">
+            <ArrowLeftIcon />
+            O'quvchilar sahifasiga qaytish
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

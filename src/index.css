@@ -531,110 +531,720 @@ progress {
 }
 
 /* --- Login & Admin Login --- */
-.login-page,
-.admin-login-page {
+.auth-page {
+  /* O'quvchi sahifasi: moviy-binafsha mavzu */
+  --auth-accent: #22b8cf;
+  --auth-accent-2: #1098ad;
+  --auth-accent-3: #7950f2;
+  --auth-glow: rgba(34, 184, 207, 0.35);
+
+  --auth-surface: rgba(33, 37, 41, 0.72);
+  --auth-border: rgba(255, 255, 255, 0.08);
+  --auth-input-border: rgba(255, 255, 255, 0.12);
+  --auth-input-bg: rgba(255, 255, 255, 0.04);
+  --auth-input-bg-focus: rgba(255, 255, 255, 0.07);
+  --auth-text: #f1f3f5;
+  --auth-text-muted: #adb5bd;
+  --auth-placeholder: #6c757d;
+
+  position: relative;
+  min-height: calc(100vh - 6.4rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.4rem 0;
+}
+
+/* Admin sahifasi: to'q sariq-pushti mavzu */
+.auth-page--admin {
+  --auth-accent: #ffa94d;
+  --auth-accent-2: #f76707;
+  --auth-accent-3: #e64980;
+  --auth-glow: rgba(255, 146, 43, 0.35);
+}
+
+/* Fon: suzuvchi blob'lar + yumshoq to'r */
+.auth-bg {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.auth-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 4.8rem 4.8rem;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 20%, transparent 70%);
+  mask-image: radial-gradient(ellipse at center, #000 20%, transparent 70%);
+}
+
+.auth-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.45;
+  animation: auth-float 18s ease-in-out infinite;
+}
+
+.auth-blob--1 {
+  width: 44rem;
+  height: 44rem;
+  top: -14rem;
+  left: -10rem;
+  background: var(--auth-accent-2);
+}
+
+.auth-blob--2 {
+  width: 38rem;
+  height: 38rem;
+  bottom: -14rem;
+  right: -8rem;
+  background: var(--auth-accent-3);
+  animation-delay: -6s;
+}
+
+.auth-blob--3 {
+  width: 24rem;
+  height: 24rem;
+  top: 45%;
+  left: 62%;
+  background: var(--auth-accent);
+  opacity: 0.22;
+  animation-delay: -12s;
+}
+
+@keyframes auth-float {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(3rem, -4rem) scale(1.08);
+  }
+  66% {
+    transform: translate(-2rem, 2rem) scale(0.95);
+  }
+}
+
+/* Karta (glassmorphism) */
+.auth-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
   max-width: 44rem;
-  margin: 8rem auto 0;
-  padding: 3.2rem;
-  background-color: var(--color-dark);
-  border-radius: 12px;
+  padding: 4rem 3.6rem 3.2rem;
+  color: var(--auth-text);
+  background: var(--auth-surface);
+  border: 1px solid var(--auth-border);
+  border-radius: 2.4rem;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 2.4rem 6rem rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  animation: auth-card-in 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* Kartaning yuqori chetidagi yorug' chiziq */
+.auth-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 2.4rem;
+  right: 2.4rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--auth-accent), transparent);
+}
+
+@keyframes auth-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(2rem) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2.8rem;
+}
+
+.auth-brand img {
+  width: 3.6rem;
+  height: 3.6rem;
+  object-fit: contain;
+  filter: drop-shadow(0 0 1.2rem var(--auth-glow));
+}
+
+.auth-brand-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--auth-text-muted);
+}
+
+/* Admin: qalqon belgisi va "himoyalangan" yorlig'i */
+.auth-badge {
+  width: 6.4rem;
+  height: 6.4rem;
+  margin: 0 auto 1.6rem;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  border-radius: 1.8rem;
+  background: linear-gradient(135deg, var(--auth-accent), var(--auth-accent-2));
+  box-shadow: 0 1rem 3rem var(--auth-glow);
+  transform: rotate(-6deg);
+}
+
+.auth-badge svg {
+  width: 3.2rem;
+  height: 3.2rem;
+  transform: rotate(6deg);
+}
+
+.auth-pill-row {
   text-align: center;
+  margin-bottom: 1.4rem;
 }
 
-.login-page h2,
-.admin-login-page h2 {
-  font-size: 3rem;
-  margin-bottom: 2.4rem;
+.auth-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.5rem 1.2rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--auth-accent);
+  background: color-mix(in srgb, var(--auth-accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--auth-accent) 30%, transparent);
+  border-radius: 100px;
 }
 
-.login-page form,
-.admin-login-page form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.6rem;
+.auth-pill-dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: currentColor;
+  animation: auth-pulse 1.6s ease-in-out infinite;
 }
 
-.login-page .row,
-.admin-login-page .row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  text-align: left;
+@keyframes auth-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--auth-accent) 60%, transparent);
+  }
+  50% {
+    opacity: 0.6;
+    box-shadow: 0 0 0 0.5rem transparent;
+  }
 }
 
-.login-page label,
-.admin-login-page label {
+.auth-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-align: center;
+  margin-bottom: 0.8rem;
+}
+
+.auth-subtitle {
+  font-size: 1.5rem;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--auth-text-muted);
+  margin-bottom: 2.8rem;
+}
+
+/* Kirish / Ro'yxatdan o'tish almashtirgich */
+.auth-tabs {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 0.5rem;
+  margin-bottom: 2.8rem;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--auth-border);
+  border-radius: 1.4rem;
+}
+
+.auth-tabs-indicator {
+  position: absolute;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  width: calc(50% - 0.5rem);
+  border-radius: 1rem;
+  background: linear-gradient(135deg, var(--auth-accent), var(--auth-accent-2));
+  box-shadow: 0 0.6rem 1.6rem var(--auth-glow);
+  transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.auth-tabs[data-mode="register"] .auth-tabs-indicator {
+  transform: translateX(100%);
+}
+
+.auth-tab {
+  position: relative;
+  z-index: 1;
+  padding: 1rem;
+  font-family: inherit;
   font-size: 1.4rem;
-  font-weight: 500;
-  color: var(--color-medium);
-  padding-left: 1.4rem;
+  font-weight: 600;
+  color: var(--auth-text-muted);
+  background: none;
+  border: none;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: color 0.3s;
 }
 
-.login-page input,
-.admin-login-page input {
+.auth-tab:hover {
+  color: var(--auth-text);
+}
+
+.auth-tab.active {
+  color: #fff;
+}
+
+.auth-tab:focus-visible {
+  outline: 2px solid var(--auth-accent);
+  outline-offset: 2px;
+}
+
+/* Forma va inputlar */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.auth-label {
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #dee2e6;
+}
+
+.auth-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.auth-input-icon {
+  position: absolute;
+  left: 1.6rem;
+  width: 2rem;
+  height: 2rem;
+  color: var(--auth-placeholder);
+  pointer-events: none;
+  transition: color 0.25s;
+}
+
+.auth-input-wrap:focus-within .auth-input-icon {
+  color: var(--auth-accent);
+}
+
+.auth-input {
+  width: 100%;
+  padding: 1.4rem 1.6rem 1.4rem 4.8rem;
   font-family: inherit;
   font-size: 1.6rem;
-  padding: 1.2rem 1.8rem;
-  border-radius: 100px;
-  border: 2px solid var(--color-medium);
-  background-color: var(--color-light);
-  color: var(--color-darkest);
+  color: var(--auth-text);
+  caret-color: var(--auth-accent);
+  background: var(--auth-input-bg);
+  border: 1.5px solid var(--auth-input-border);
+  border-radius: 1.2rem;
   outline: none;
-  transition: 0.3s;
+  transition:
+    border-color 0.25s,
+    background-color 0.25s,
+    box-shadow 0.25s;
 }
 
-.login-page input:focus,
-.admin-login-page input:focus {
-  border-color: var(--color-theme);
+.auth-input--password {
+  padding-right: 5.6rem;
 }
 
-.login-page .hint {
-  font-size: 1.3rem;
-  color: var(--color-medium);
+.auth-input::placeholder {
+  color: var(--auth-placeholder);
+  opacity: 1;
 }
 
-.login-page .error,
-.admin-login-page .error {
-  font-size: 1.4rem;
-  padding: 1rem 1.6rem;
-  background-color: var(--color-accent);
-  color: var(--color-darkest);
+.auth-input:hover {
+  border-color: rgba(255, 255, 255, 0.22);
 }
 
-.login-page button[type="submit"],
-.admin-login-page button[type="submit"] {
-  font-family: inherit;
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: var(--color-light);
-  background-color: var(--color-theme);
-  border: 2px solid var(--color-theme);
-  padding: 1.2rem 2.4rem;
-  border-radius: 100px;
+.auth-input:focus {
+  border-color: var(--auth-accent);
+  background: var(--auth-input-bg-focus);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--auth-accent) 18%, transparent);
+}
+
+/* Brauzer autofill'ining sariq fonini o'chirish */
+.auth-input:-webkit-autofill {
+  -webkit-text-fill-color: var(--auth-text);
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* Ko'zcha tugmasi */
+.auth-eye {
+  position: absolute;
+  right: 0.8rem;
+  width: 3.6rem;
+  height: 3.6rem;
+  display: grid;
+  place-items: center;
+  color: var(--auth-text-muted);
+  background: transparent;
+  border: none;
+  border-radius: 1rem;
   cursor: pointer;
-  transition: 0.3s;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
 }
 
-.login-page button[type="submit"]:not([disabled]):hover,
-.admin-login-page button[type="submit"]:not([disabled]):hover {
-  background-color: transparent;
+.auth-eye:hover {
+  color: var(--auth-text);
+  background: rgba(255, 255, 255, 0.08);
 }
 
-.login-page button[disabled],
-.admin-login-page button[disabled] {
-  opacity: 0.6;
+.auth-eye[aria-pressed="true"] {
+  color: var(--auth-accent);
+}
+
+.auth-eye:focus-visible {
+  outline: 2px solid var(--auth-accent);
+  outline-offset: 1px;
+}
+
+.auth-eye svg {
+  width: 2rem;
+  height: 2rem;
+  animation: auth-eye-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes auth-eye-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4) rotate(-25deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.auth-caps {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  animation: auth-fade-in 0.25s ease both;
+}
+
+/* Parol kuchi ko'rsatkichi (ro'yxatdan o'tishda) */
+.auth-strength {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: -0.6rem;
+  animation: auth-fade-in 0.3s ease both;
+}
+
+.auth-strength-bars {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+
+.auth-strength-bar {
+  height: 0.5rem;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: background-color 0.3s;
+}
+
+.auth-strength[data-level="1"] .auth-strength-bar:nth-child(-n + 1) {
+  background: #ff6b6b;
+}
+
+.auth-strength[data-level="2"] .auth-strength-bar:nth-child(-n + 2) {
+  background: #ffa94d;
+}
+
+.auth-strength[data-level="3"] .auth-strength-bar {
+  background: #51cf66;
+}
+
+.auth-rules {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.6rem;
+}
+
+.auth-rule {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.25rem;
+  color: var(--auth-placeholder);
+  transition: color 0.25s;
+}
+
+.auth-rule.ok {
+  color: #51cf66;
+}
+
+.auth-rule-mark {
+  width: 1.6rem;
+  height: 1.6rem;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+}
+
+.auth-rule-mark svg {
+  width: 1rem;
+  height: 1rem;
+  stroke-width: 3.5;
+}
+
+/* Xato xabari */
+.auth-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.2rem 1.4rem;
+  font-size: 1.4rem;
+  line-height: 1.4;
+  color: #ffa8a8;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 1.2rem;
+  animation: auth-fade-in 0.3s ease both;
+}
+
+.auth-error svg {
+  flex-shrink: 0;
+  width: 1.8rem;
+  height: 1.8rem;
+  margin-top: 0.1rem;
+}
+
+@keyframes auth-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.6rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Asosiy tugma: gradient + yaltirash effekti */
+.auth-submit {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.4rem;
+  padding: 1.5rem 2.4rem;
+  font-family: inherit;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, var(--auth-accent), var(--auth-accent-2));
+  border: none;
+  border-radius: 1.2rem;
+  box-shadow: 0 1rem 2.4rem var(--auth-glow);
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s,
+    opacity 0.2s;
+}
+
+.auth-submit::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s;
+}
+
+.auth-submit:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 1.4rem 3rem var(--auth-glow);
+}
+
+.auth-submit:not(:disabled):hover::after {
+  left: 125%;
+}
+
+.auth-submit:not(:disabled):active {
+  transform: translateY(0);
+}
+
+.auth-submit svg {
+  width: 1.8rem;
+  height: 1.8rem;
+  transition: transform 0.2s;
+}
+
+.auth-submit:not(:disabled):hover svg {
+  transform: translateX(3px);
+}
+
+.auth-submit:disabled {
+  opacity: 0.5;
+  box-shadow: none;
   cursor: not-allowed;
 }
 
-.login-page .switch-mode {
-  margin-top: 2rem;
-  font-family: inherit;
+.auth-submit:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+.auth-spinner {
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: auth-spin 0.7s linear infinite;
+}
+
+@keyframes auth-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.auth-footer {
+  margin-top: 2.4rem;
   font-size: 1.4rem;
-  color: var(--color-accent);
+  text-align: center;
+  color: var(--auth-text-muted);
+}
+
+.auth-link {
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 600;
+  color: var(--auth-accent);
   background: none;
   border: none;
+  text-decoration: none;
   cursor: pointer;
+}
+
+.auth-link:hover {
   text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.auth-link--back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--auth-text-muted);
+  transition: color 0.2s;
+}
+
+.auth-link--back:hover {
+  color: var(--auth-text);
+  text-decoration: none;
+}
+
+.auth-link--back svg {
+  width: 1.6rem;
+  height: 1.6rem;
+  transition: transform 0.2s;
+}
+
+.auth-link--back:hover svg {
+  transform: translateX(-3px);
+}
+
+/* Noto'g'ri parolda forma silkinadi */
+.auth-shake {
+  animation: auth-shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes auth-shake {
+  10%,
+  90% {
+    transform: translateX(-1px);
+  }
+  20%,
+  80% {
+    transform: translateX(2px);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translateX(-5px);
+  }
+  40%,
+  60% {
+    transform: translateX(5px);
+  }
+}
+
+@media (max-width: 520px) {
+  .auth-card {
+    padding: 3.2rem 2.2rem 2.4rem;
+    border-radius: 2rem;
+  }
+
+  .auth-title {
+    font-size: 2.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-page *,
+  .auth-page *::before,
+  .auth-page *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* --- Header: o'quvchi va chiqish tugmasi --- */
