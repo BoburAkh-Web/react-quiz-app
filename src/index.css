@@ -530,6 +530,330 @@ progress {
   color: var(--color-light);
 }
 
+/* --- Admin: AI savol generatori --- */
+.ai-card {
+  background-image:
+    linear-gradient(var(--color-dark), var(--color-dark)),
+    linear-gradient(90deg, var(--color-theme), #7950f2);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  border-top: 3px solid transparent;
+}
+
+.ai-subtitle {
+  margin-top: 0.8rem;
+  font-size: 1.4rem;
+  line-height: 1.5;
+  color: var(--color-medium);
+}
+
+.ai-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.ai-example {
+  font-family: inherit;
+  font-size: 1.2rem;
+  padding: 0.5rem 1.2rem;
+  border-radius: 100px;
+  border: 1px dashed #868e96;
+  background: none;
+  color: var(--color-medium);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.ai-example:not([disabled]):hover {
+  border-style: solid;
+  border-color: var(--color-theme);
+  color: var(--color-light);
+}
+
+.ai-wrap {
+  flex-wrap: wrap;
+}
+
+.ai-card .aq-chip[disabled],
+.ai-example[disabled],
+.ai-card .aq-input[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ai-notes {
+  min-height: 6.4rem;
+}
+
+/* Yaratish jarayoni */
+.ai-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.ai-progress-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--color-medium);
+}
+
+.ai-progress-track {
+  height: 0.8rem;
+  border-radius: 100px;
+  background-color: var(--color-darkest);
+  overflow: hidden;
+}
+
+.ai-progress-bar {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--color-theme), #7950f2, var(--color-theme));
+  background-size: 200% 100%;
+  animation: ai-shimmer 1.5s linear infinite;
+  transition: width 0.5s ease;
+}
+
+@keyframes ai-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.ai-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--color-theme), #7950f2);
+}
+
+.ai-submit:not([disabled]):hover {
+  background: linear-gradient(135deg, var(--color-theme), #7950f2);
+  filter: brightness(1.12);
+}
+
+.ai-spinner {
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: ai-spin 0.7s linear infinite;
+}
+
+@keyframes ai-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Natijalarni ko'rib chiqish */
+.ai-preview {
+  animation: ai-fade-in 0.4s ease both;
+}
+
+@keyframes ai-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ai-preview-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.ai-preview-title {
+  font-size: 2rem;
+  margin-bottom: 0.4rem;
+}
+
+.ai-preview-stats {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #3bc9db;
+}
+
+.ai-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.ai-q {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 1.8rem;
+  border-radius: 12px;
+  background-color: var(--color-darkest);
+}
+
+.ai-q-head {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.ai-q-num {
+  display: grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 50%;
+  font-size: 1.3rem;
+  font-weight: 700;
+  background-color: var(--color-dark);
+}
+
+.ai-badge {
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.3rem 1rem;
+  border-radius: 100px;
+}
+
+.ai-badge--easy {
+  color: #69db7c;
+  background-color: rgba(81, 207, 102, 0.12);
+}
+
+.ai-badge--medium {
+  color: #ffc078;
+  background-color: rgba(255, 169, 77, 0.12);
+}
+
+.ai-badge--hard {
+  color: #ff8787;
+  background-color: rgba(255, 107, 107, 0.12);
+}
+
+.ai-q-points {
+  font-size: 1.2rem;
+  color: #868e96;
+}
+
+.ai-q-remove {
+  margin-left: auto;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: none;
+  background: none;
+  color: #868e96;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.ai-q-remove:hover {
+  color: #ff6b6b;
+  background-color: rgba(255, 107, 107, 0.12);
+}
+
+.ai-q-text {
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.ai-q-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
+.ai-q-option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 1.2rem 0.6rem 0.6rem;
+  font-family: inherit;
+  font-size: 1.4rem;
+  line-height: 1.4;
+  text-align: left;
+  color: var(--color-light);
+  background-color: var(--color-dark);
+  border: 2px solid transparent;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.ai-q-option:hover {
+  border-color: var(--color-medium);
+}
+
+.ai-q-option.correct {
+  border-color: var(--color-theme);
+  background-color: rgba(16, 152, 173, 0.18);
+}
+
+.ai-q-letter {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  font-size: 1.3rem;
+  font-weight: 700;
+  background-color: var(--color-darkest);
+}
+
+.ai-q-option.correct .ai-q-letter {
+  background-color: var(--color-theme);
+}
+
+.ai-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.ai-cancel {
+  font-family: inherit;
+  font-size: 1.6rem;
+  font-weight: 600;
+  padding: 1.4rem 2.4rem;
+  border-radius: 100px;
+  border: 2px solid var(--color-medium);
+  background: none;
+  color: var(--color-medium);
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.ai-cancel:not([disabled]):hover {
+  color: var(--color-light);
+  border-color: var(--color-light);
+}
+
+.ai-save {
+  flex: 1;
+}
+
+@media (max-width: 600px) {
+  .ai-q-options {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* --- Login & Admin Login --- */
 .auth-page {
   /* O'quvchi sahifasi: moviy-binafsha mavzu */

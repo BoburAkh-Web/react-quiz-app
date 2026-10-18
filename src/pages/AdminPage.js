@@ -3,11 +3,12 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Main from "../components/Main";
 import AddQuestions from "../components/AddQuestions";
+import AIGenerator from "../components/AIGenerator";
 import Dashboard from "../components/Dashboard";
 import { supabase } from "../components/supabase";
 
 function AdminPage() {
-  const [activeTab, setActiveTab] = useState("questions"); // "questions" | "dashboard"
+  const [activeTab, setActiveTab] = useState("questions"); // "questions" | "ai" | "dashboard"
   const [numQuestions, setNumQuestions] = useState(null);
 
   const navigate = useNavigate();
@@ -43,6 +44,12 @@ function AdminPage() {
                 Savol qo'shish
               </button>
               <button
+                className={`btn admin-tab ${activeTab === "ai" ? "active" : ""}`}
+                onClick={() => setActiveTab("ai")}
+              >
+                ✨ AI generator
+              </button>
+              <button
                 className={`btn admin-tab ${activeTab === "dashboard" ? "active" : ""}`}
                 onClick={() => setActiveTab("dashboard")}
               >
@@ -55,13 +62,14 @@ function AdminPage() {
             </button>
           </div>
 
+          {activeTab !== "dashboard" && numQuestions !== null && (
+            <p className="admin-info">📚 Bazada {numQuestions} ta savol bor</p>
+          )}
           {activeTab === "questions" && (
-            <>
-              {numQuestions !== null && (
-                <p className="admin-info">📚 Bazada {numQuestions} ta savol bor</p>
-              )}
-              <AddQuestions onQuestionAdded={fetchQuestionsCount} />
-            </>
+            <AddQuestions onQuestionAdded={fetchQuestionsCount} />
+          )}
+          {activeTab === "ai" && (
+            <AIGenerator onQuestionsAdded={fetchQuestionsCount} />
           )}
           {activeTab === "dashboard" && <Dashboard />}
         </div>
