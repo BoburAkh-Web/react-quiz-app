@@ -25,7 +25,7 @@ function AdminPage() {
 
   function handleLogout() {
     sessionStorage.removeItem("isAdmin");
-    navigate("/admin-login");
+    navigate("/admin/login");
   }
 
   return (
