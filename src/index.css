@@ -1,3 +1,7 @@
+/*
+  Breakpointlar (har bir bo'lim oxirida yoziladi):
+  768px — planshet, 600px — telefon, 380px — kichik telefon
+*/
 :root {
   --color-darkest: #343a40;
   --color-dark: #495057;
@@ -6,6 +10,9 @@
 
   --color-theme: #1098ad;
   --color-accent: #ffa94d;
+
+  /* Sahifa chetidagi bo'sh joy: telefonda 1.6rem, kompyuterda 3.2rem */
+  --page-padding: clamp(1.6rem, 4vw, 3.2rem);
 }
 
 @import url("https://fonts.googleapis.com/css2?family=Codystar&display=swap");
@@ -18,6 +25,8 @@
 
 html {
   font-size: 62.5%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
     Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
@@ -25,9 +34,16 @@ html {
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   color: var(--color-light);
   background-color: var(--color-darkest);
-  padding: 3.2rem;
+  padding: var(--page-padding);
+  overflow-wrap: break-word;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .app {
@@ -38,15 +54,23 @@ body {
 }
 
 .main {
-  width: 50rem;
+  width: 100%;
+  max-width: 50rem;
 }
 
 .app-header {
-  width: 66rem;
-  margin-bottom: 4rem;
+  width: 100%;
+  max-width: 66rem;
+  margin-bottom: clamp(2.4rem, 6vw, 4rem);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1.2rem;
+}
+
+.app-header img {
+  flex-shrink: 0;
+  width: clamp(5.2rem, 18vw, 14rem);
 }
 
 .error {
@@ -58,29 +82,26 @@ body {
   border-radius: 100px;
 }
 
-img {
-  width: 14rem;
-}
-
 h1 {
   font-family: "Codystar";
-  font-size: 5.6rem;
+  font-size: clamp(2.4rem, 7.8vw, 5.6rem);
 }
 
 h2 {
-  font-size: 3.6rem;
+  font-size: clamp(2.4rem, 6vw, 3.6rem);
   margin-bottom: 2rem;
 }
 
 h3 {
-  font-size: 2.4rem;
+  font-size: clamp(1.8rem, 4.5vw, 2.4rem);
   font-weight: 600;
-  margin-bottom: 4rem;
+  margin-bottom: clamp(2.4rem, 6vw, 4rem);
 }
 
 h4 {
-  font-size: 2.2rem;
+  font-size: clamp(1.8rem, 4.5vw, 2.2rem);
   font-weight: 600;
+  line-height: 1.4;
   margin-bottom: 2.4rem;
 }
 
@@ -88,15 +109,16 @@ h4 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
 }
 
 .progress {
-  margin-bottom: 4rem;
+  margin-bottom: clamp(2.4rem, 6vw, 4rem);
   display: grid;
   justify-content: space-between;
   gap: 1.2rem;
   grid-template-columns: auto auto;
-  font-size: 1.8rem;
+  font-size: clamp(1.5rem, 4vw, 1.8rem);
   color: var(--color-medium);
 }
 
@@ -129,12 +151,15 @@ progress {
   transition: 0.3s;
 }
 
-.btn:not([disabled]):hover {
-  background-color: var(--color-darkest);
-}
+/* Touch ekranda hover bosilgandan keyin "yopishib" qolmasligi uchun */
+@media (hover: hover) {
+  .btn:not([disabled]):hover {
+    background-color: var(--color-darkest);
+  }
 
-.btn-option:not([disabled]):hover {
-  transform: translateX(1.2rem);
+  .btn-option:not([disabled]):hover {
+    transform: translateX(1.2rem);
+  }
 }
 
 .btn[disabled]:hover {
@@ -205,8 +230,14 @@ progress {
   font-size: 1.4rem;
 }
 
+footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+}
+
 .timer {
-  float: left;
   font-size: 1.8rem;
   color: var(--color-medium);
   border: 2px solid var(--color-dark);
@@ -269,6 +300,58 @@ progress {
 .counter * {
   font-size: inherit;
   padding: 0.8rem;
+}
+
+/* --- Quiz sahifasi: telefon --- */
+@media (max-width: 600px) {
+  .btn {
+    font-size: 1.7rem;
+    padding: 1.2rem 2rem;
+  }
+
+  .btn-ui {
+    float: none;
+    width: 100%;
+  }
+
+  .options {
+    gap: 1rem;
+    margin-bottom: 2.4rem;
+  }
+
+  .btn-option {
+    font-size: 1.6rem;
+    line-height: 1.4;
+    border-radius: 2rem;
+  }
+
+  /* Tanlangan variant ekran chetidan chiqib ketmasligi uchun */
+  .answer {
+    transform: translateX(0.8rem);
+  }
+
+  .timer {
+    flex-shrink: 0;
+    font-size: 1.6rem;
+    padding: 1.2rem 1.8rem;
+    white-space: nowrap;
+  }
+
+  .error,
+  .result {
+    border-radius: 2rem;
+  }
+
+  .result {
+    padding: 1.8rem 2rem;
+    font-size: 1.7rem;
+    line-height: 1.5;
+  }
+
+  .highscore {
+    font-size: 1.6rem;
+    margin-bottom: 2.4rem;
+  }
 }
 
 /* --- Admin: savol qo'shish formasi --- */
@@ -417,6 +500,7 @@ progress {
 
 .aq-points {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.8rem;
 }
@@ -530,6 +614,54 @@ progress {
   color: var(--color-light);
 }
 
+@media (max-width: 600px) {
+  .aq-card {
+    gap: 2rem;
+    padding: 2rem 1.6rem;
+  }
+
+  .aq-title {
+    font-size: 2rem;
+  }
+
+  .aq-label {
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+  }
+
+  /* iOS Safari 16px dan kichik inputga fokusda sahifani kattalashtiradi */
+  .aq-input,
+  .aq-option-input {
+    font-size: 1.6rem;
+  }
+
+  /* Ekranda ✓ belgisi va chegara rangi yetarli, input uchun joy tejaymiz */
+  .aq-correct-tag {
+    display: none;
+  }
+
+  .aq-chip {
+    flex: 1 1 auto;
+    padding: 0.9rem 1rem;
+  }
+
+  .aq-points-input {
+    flex: 1 1 100%;
+    width: auto;
+    min-width: 0;
+  }
+
+  .aq-submit {
+    font-size: 1.6rem;
+  }
+
+  .aq-danger {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+}
+
 /* --- Admin: AI savol generatori --- */
 .ai-card {
   background-image:
@@ -569,10 +701,6 @@ progress {
   border-style: solid;
   border-color: var(--color-theme);
   color: var(--color-light);
-}
-
-.ai-wrap {
-  flex-wrap: wrap;
 }
 
 .ai-card .aq-chip[disabled],
@@ -775,7 +903,7 @@ progress {
 
 .ai-q-options {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.8rem;
 }
 
@@ -794,6 +922,10 @@ progress {
   border-radius: 100px;
   cursor: pointer;
   transition: border-color 0.2s;
+}
+
+.ai-q-option span:last-child {
+  min-width: 0;
 }
 
 .ai-q-option:hover {
@@ -849,8 +981,33 @@ progress {
 }
 
 @media (max-width: 600px) {
+  .ai-q {
+    padding: 1.4rem;
+  }
+
+  .ai-q-text {
+    font-size: 1.5rem;
+  }
+
   .ai-q-options {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ai-q-option {
+    border-radius: 1.6rem;
+  }
+
+  .ai-q-remove {
+    width: 3.6rem;
+    height: 3.6rem;
+  }
+
+  .ai-actions {
+    flex-direction: column-reverse;
+  }
+
+  .ai-save {
+    flex: none;
   }
 }
 
@@ -872,7 +1029,8 @@ progress {
   --auth-placeholder: #6c757d;
 
   position: relative;
-  min-height: calc(100vh - 6.4rem);
+  min-height: calc(100vh - 2 * var(--page-padding));
+  min-height: calc(100dvh - 2 * var(--page-padding));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1550,7 +1708,7 @@ progress {
   }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 600px) {
   .auth-card {
     padding: 3.2rem 2.2rem 2.4rem;
     border-radius: 2rem;
@@ -1558,6 +1716,51 @@ progress {
 
   .auth-title {
     font-size: 2.4rem;
+  }
+
+  .auth-subtitle {
+    font-size: 1.4rem;
+    margin-bottom: 2.2rem;
+  }
+
+  .auth-tabs {
+    margin-bottom: 2.2rem;
+  }
+
+  .auth-tab {
+    padding: 1rem 0.4rem;
+    font-size: 1.3rem;
+  }
+
+  .auth-eye {
+    right: 0.6rem;
+    width: 4rem;
+    height: 4rem;
+  }
+
+  /* Telefonda blur og'ir ishlaydi: blob'lar kichikroq va yengilroq */
+  .auth-blob {
+    filter: blur(60px);
+  }
+
+  .auth-blob--1 {
+    width: 28rem;
+    height: 28rem;
+  }
+
+  .auth-blob--2 {
+    width: 26rem;
+    height: 26rem;
+  }
+
+  .auth-blob--3 {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .auth-card {
+    padding: 2.8rem 1.6rem 2rem;
   }
 }
 
@@ -1593,6 +1796,37 @@ progress {
   padding: 0.8rem 1.8rem;
 }
 
+@media (max-width: 768px) {
+  .app-header {
+    flex-wrap: wrap;
+  }
+
+  /* Fixed panel sarlavha ustiga tushmasligi uchun header ichidagi yuqori qatorga o'tadi */
+  .header-user {
+    position: static;
+    order: -1;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .header-nickname {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .header-logout {
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .app-header {
+    justify-content: center;
+  }
+}
+
 /* --- Admin Page --- */
 .admin-toolbar {
   display: flex;
@@ -1608,8 +1842,9 @@ progress {
 }
 
 .admin-tab {
-  font-size: 1.6rem;
-  padding: 1rem 2rem;
+  font-size: 1.5rem;
+  padding: 1rem 1.4rem;
+  white-space: nowrap;
 }
 
 .admin-tab.active,
@@ -1619,8 +1854,8 @@ progress {
 }
 
 .admin-logout {
-  font-size: 1.6rem;
-  padding: 1rem 2rem;
+  font-size: 1.5rem;
+  padding: 1rem 1.4rem;
   border-color: var(--color-accent);
   background-color: transparent;
   color: var(--color-accent);
@@ -1634,6 +1869,36 @@ progress {
   background-color: var(--color-dark);
   font-size: 1.3rem;
   color: var(--color-medium);
+}
+
+/* Telefonda tablar teng ustunli bitta qatorga, Logout esa uning ustiga o'tadi */
+@media (max-width: 600px) {
+  .admin-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .admin-tabs {
+    order: 1;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.6rem;
+  }
+
+  .admin-tab {
+    font-size: 1.3rem;
+    line-height: 1.25;
+    text-align: center;
+    white-space: normal;
+    padding: 1rem 0.6rem;
+    border-radius: 1.2rem;
+  }
+
+  .admin-logout {
+    margin-left: auto;
+    font-size: 1.4rem;
+    padding: 0.7rem 1.8rem;
+  }
 }
 
 /* --- Dashboard --- */
@@ -1874,4 +2139,104 @@ progress {
 
 .dashboard-message.error {
   color: var(--color-light);
+}
+
+/* Telefonda jadval kartochkalar ro'yxatiga aylanadi */
+@media (max-width: 600px) {
+  .stat-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stat-card {
+    padding: 1.4rem;
+  }
+
+  .stat-card:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .stat-value {
+    font-size: 2.6rem;
+  }
+
+  .dashboard-toolbar {
+    flex-direction: column;
+  }
+
+  .dashboard-search {
+    flex: none;
+    font-size: 1.6rem;
+  }
+
+  .dashboard-table,
+  .dashboard-table td {
+    display: block;
+  }
+
+  .dashboard-table {
+    background: none;
+    border-radius: 0;
+    overflow: visible;
+  }
+
+  .dashboard-table thead {
+    display: none;
+  }
+
+  .dashboard-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .dashboard-table tbody tr {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr) auto;
+    grid-template-areas:
+      "rank student best"
+      "last last last";
+    align-items: center;
+    gap: 1.2rem 1rem;
+    padding: 1.4rem;
+    background-color: var(--color-dark);
+    border-radius: 12px;
+  }
+
+  .dashboard-table td {
+    padding: 0;
+    border-bottom: none;
+  }
+
+  .dashboard-table .col-rank {
+    grid-area: rank;
+    width: auto;
+  }
+
+  .dashboard-table .col-student {
+    grid-area: student;
+  }
+
+  .dashboard-table .col-last {
+    grid-area: last;
+    width: auto;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--color-darkest);
+  }
+
+  .dashboard-table .col-best {
+    grid-area: best;
+    width: auto;
+  }
+
+  /* thead yashiringani uchun ustun nomlari kartochka ichida ko'rsatiladi */
+  .dashboard-table td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 0.6rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-medium);
+  }
 }

@@ -244,7 +244,7 @@ function AIGenerator({ onQuestionsAdded }) {
 
         <div className="aq-field">
           <span className="aq-label">Qiyinlik darajasi</span>
-          <div className="aq-points ai-wrap">
+          <div className="aq-points">
             {DIFFICULTIES.map((d) => (
               <button
                 key={d.value}
@@ -261,7 +261,7 @@ function AIGenerator({ onQuestionsAdded }) {
 
         <div className="aq-field">
           <span className="aq-label">Til</span>
-          <div className="aq-points ai-wrap">
+          <div className="aq-points">
             {LANGUAGES.map((l) => (
               <button
                 key={l.value}

@@ -137,7 +137,7 @@ function Dashboard() {
                     : student.rank}
                 </td>
 
-                <td>
+                <td className="col-student">
                   <div className="student-cell">
                     <span className="student-avatar">
                       {student.nickname.charAt(0).toUpperCase()}
@@ -153,7 +153,7 @@ function Dashboard() {
                   </div>
                 </td>
 
-                <td className="col-last">
+                <td className="col-last" data-label="Oxirgi natija">
                   {hasAttempted(student) ? (
                     <div className="last-result">
                       <div className="last-result-top">
@@ -182,7 +182,7 @@ function Dashboard() {
                   )}
                 </td>
 
-                <td className="col-best">
+                <td className="col-best" data-label="Eng yaxshi">
                   <span className="best-badge">{student.best_points}</span>
                 </td>
               </tr>
