@@ -1,4 +1,5 @@
-import React, { useEffect, useReducer, useRef } from "react";
+import React, { useEffect, useReducer, useRef, useState } from "react";
+import { AnimatePresence, MotionConfig } from "motion/react";
 import Header from "../components/Header";
 import Main from "../components/Main";
 import Loader from "../components/Loader";
@@ -14,6 +15,7 @@ import { supabase } from "../components/supabase";
 import { useAuth } from "../context/AuthContext";
 
 const SECS_PER_QUESTION = 30;
+const MUTED_KEY = "quizMuted";
 
 const initialState = {
   questions: [],
@@ -118,6 +120,10 @@ function QuizPage() {
     dispatch,
   ] = useReducer(reducer, initialState);
 
+  const [isMuted, setIsMuted] = useState(
+    () => localStorage.getItem(MUTED_KEY) === "true",
+  );
+
   const { currentStudent } = useAuth();
 
   // Natija shu urinish uchun allaqachon saqlanganmi
@@ -130,6 +136,12 @@ function QuizPage() {
     (prev, cur) => prev + cur.points,
     0,
   );
+  const totalSeconds = numQuestions * SECS_PER_QUESTION;
+
+  function toggleMuted() {
+    setIsMuted(!isMuted);
+    localStorage.setItem(MUTED_KEY, !isMuted);
+  }
 
   async function fetchQuestions() {
     dispatch({ type: "loading" });
@@ -143,6 +155,11 @@ function QuizPage() {
   useEffect(() => {
     fetchQuestions();
   }, []);
+
+  // Telefonda yangi savol tepadan boshlab ko'rinsin
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [index]);
 
   // "finished" holatiga birinchi kirganda natijani bir marta saqlash
   useEffect(() => {
@@ -178,50 +195,69 @@ function QuizPage() {
   }, [status, points, correctCount, wrongCount, currentStudent]);
 
   return (
-    <div className="app">
-      <Header />
+    <MotionConfig reducedMotion="user">
+      <div className="app quiz-page">
+        <Header />
 
-      <Main>
-        {status === "loading" && <Loader />}
-        {status === "error" && <Error />}
-        {status === "ready" && (
-          <StartScreen numQuestions={numQuestions} dispatch={dispatch} />
-        )}
-        {status === "active" && (
-          <>
-            <Progress
-              index={index}
+        <Main>
+          {status === "loading" && <Loader />}
+          {status === "error" && <Error />}
+          {status === "ready" && (
+            <StartScreen
               numQuestions={numQuestions}
-              points={points}
+              totalSeconds={totalSeconds}
               maxPossiblePoints={maxPossiblePoints}
-              answer={answer}
-            />
-            <Question
-              question={questions[index]}
               dispatch={dispatch}
-              answer={answer}
             />
-            <Footer>
-              <Timer dispatch={dispatch} secondsRemaining={secondsRemaining} />
-              <NextButton
-                dispatch={dispatch}
-                answer={answer}
+          )}
+          {status === "active" && (
+            <>
+              <Progress
                 index={index}
                 numQuestions={numQuestions}
+                points={points}
+                maxPossiblePoints={maxPossiblePoints}
+                answer={answer}
+                isMuted={isMuted}
+                onToggleMuted={toggleMuted}
               />
-            </Footer>
-          </>
-        )}
-        {status === "finished" && (
-          <FinishScreen
-            points={points}
-            maxPossiblePoints={maxPossiblePoints}
-            highscore={highscore}
-            dispatch={dispatch}
-          />
-        )}
-      </Main>
-    </div>
+              <AnimatePresence mode="wait">
+                <Question
+                  key={index}
+                  question={questions[index]}
+                  dispatch={dispatch}
+                  answer={answer}
+                  isMuted={isMuted}
+                />
+              </AnimatePresence>
+              <Footer>
+                <Timer
+                  dispatch={dispatch}
+                  secondsRemaining={secondsRemaining}
+                  totalSeconds={totalSeconds}
+                />
+                <NextButton
+                  dispatch={dispatch}
+                  answer={answer}
+                  index={index}
+                  numQuestions={numQuestions}
+                />
+              </Footer>
+            </>
+          )}
+          {status === "finished" && (
+            <FinishScreen
+              points={points}
+              maxPossiblePoints={maxPossiblePoints}
+              highscore={highscore}
+              correctCount={correctCount}
+              wrongCount={wrongCount}
+              dispatch={dispatch}
+            />
+          )}
+        </Main>
+      </div>
+    </MotionConfig>
   );
 }
 

@@ -1,20 +1,41 @@
-import React from "react";
+import { motion } from "motion/react";
+import { Clock, Play, Star } from "lucide-react";
 
-function StartScreen({ numQuestions, dispatch }) {
+function StartScreen({ numQuestions, totalSeconds, maxPossiblePoints, dispatch }) {
   return (
-    <div className="start">
+    <motion.div
+      className="start quiz-card"
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+    >
       <h2>Welcome to The Happy Quiz!</h2>
 
       <h3>{numQuestions} questions to test your Javascript mastery</h3>
       {numQuestions > 0 && (
-        <button
-          className="btn btn-ui"
-          onClick={() => dispatch({ type: "start" })}
-        >
-          Let's start
-        </button>
+        <>
+          <ul className="start-stats">
+            <li>
+              <Clock />
+              {Math.ceil(totalSeconds / 60)} min
+            </li>
+            <li>
+              <Star />
+              {maxPossiblePoints} points
+            </li>
+          </ul>
+
+          <motion.button
+            className="btn btn-ui"
+            whileTap={{ scale: 0.97 }}
+            onClick={() => dispatch({ type: "start" })}
+          >
+            <Play />
+            Let's start
+          </motion.button>
+        </>
       )}
-    </div>
+    </motion.div>
   );
 }
 

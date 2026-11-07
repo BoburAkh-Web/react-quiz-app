@@ -10,6 +10,8 @@
     "@testing-library/user-event": "^13.5.0",
     "canvas-confetti": "^1.9.4",
     "json-server": "^1.0.0-beta.15",
+    "lucide-react": "^1.70.0",
+    "motion": "^14.10.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-router-dom": "^7.18.4",
