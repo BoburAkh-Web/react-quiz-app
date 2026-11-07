@@ -2,8 +2,10 @@
 // API kalit faqat serverda turadi (Netlify env: GEMINI_API_KEY) va brauzerga chiqmaydi.
 // Manzil: POST /.netlify/functions/generate-questions
 
-const MODEL = process.env.GEMINI_MODEL || "gemini-flash-latest";
+const MODEL = process.env.GEMINI_MODEL || "gemini-flash-lite-latest";
 const MAX_PER_REQUEST = 10;
+// Netlify funksiyani 30 soniyada to'xtatadi, undan oldin tushunarli xato qaytaramiz
+const GEMINI_TIMEOUT_MS = 25000;
 
 const DIFFICULTY_TEXT = {
   easy: "easy (beginner level, core concepts and definitions)",
@@ -143,6 +145,7 @@ export default async (req) => {
           "Content-Type": "application/json",
           "x-goog-api-key": apiKey,
         },
+        signal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
         body: JSON.stringify({
           contents: [
             {
@@ -162,6 +165,8 @@ export default async (req) => {
     );
   } catch (err) {
     console.error("Gemini fetch failed", err);
+    if (err.name === "TimeoutError")
+      return json({ error: "AI javob berishga ulgurmadi, qayta urinib ko'ring" }, 504);
     return json({ error: "AI serveriga ulanib bo'lmadi" }, 502);
   }
 
