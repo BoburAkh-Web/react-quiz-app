@@ -1,0 +1,20 @@
+[build]
+  command = "npm run build"
+  publish = "build"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# `npm run dev:netlify`: Vite + Netlify Functions birga, http://localhost:8888
+[dev]
+  command = "npm run dev"
+  targetPort = 5173
+  port = 8888
+  framework = "#custom"
+
+# SPA: har qanday manzilni React Router ochadi
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

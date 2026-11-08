@@ -1,70 +1,76 @@
-# Getting Started with Create React App
+# The Happy Quiz
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+JavaScript bo'yicha testlar platformasi. O'quvchilar test ishlaydi va natijasini kuzatadi;
+o'qituvchi testlar va savollarni boshqaradi (qo'lda yoki AI yordamida) va natijalarni tahlil qiladi.
 
-## Available Scripts
+## Imkoniyatlar
 
-In the project directory, you can run:
+**O'quvchi:** ro'yxatdan o'tish va kirish · testlar ro'yxati · har safar aralashtirilgan savol va
+variantlar · taymer · sahifa yopilsa davom ettirish · natija, javoblar tahlili va tushuntirishlar.
 
-### `npm start`
+**Admin:** testlar (yaratish, tahrirlash, ochish/yopish) · savollar (qo'lda yoki Gemini AI bilan) ·
+har bir savol statistikasi · natijalar va o'quvchi tarixi · o'quvchi parolini tiklash.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Texnologiyalar
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+React 19, Vite, Tailwind CSS v4 + daisyUI v5, TanStack Query, React Router, Motion ·
+Supabase (Postgres + RPC funksiyalar) · Netlify (hosting + Functions) · Gemini API.
 
-### `npm test`
+## Ishga tushirish
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+npm install
+npm run dev          # http://localhost:5173 — AI generatorsiz
+npm run dev:netlify  # http://localhost:8888 — AI generator bilan
+```
 
-### `npm run build`
+AI generator uchun loyiha ildizida `.env` fayl: `GEMINI_API_KEY=...` (git'ga tushmaydi).
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Baza (Supabase)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. Supabase → **SQL Editor** → `supabase/migrations/` dagi fayllarni tartib bilan (001, 002, ...)
+   ishga tushiring.
+2. Admin parolini o'rnating (bu qatorni hech qayerga saqlamang):
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+   ```sql
+   select quiz.set_admin_password('yangi-kuchli-parol');
+   ```
 
-### `npm run eject`
+Migratsiya eski jadvallarni o'chirmaydi, yopiq `quiz_legacy` sxemasiga ko'chiradi.
+Qayta ishga tushirish xavfsiz.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Xavfsizlik modeli
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Jadvallar API'dan yashirin `quiz` sxemasida; brauzer faqat `public` sxemadagi RPC funksiyalarni chaqiradi.
+- Parollar bcrypt bilan, sessiya tokenlari bazada faqat sha256 xeshi bilan saqlanadi.
+- To'g'ri javob o'quvchiga faqat javob bergandan keyin yuboriladi; ball serverda hisoblanadi.
+- Admin 5 marta xato parol kiritsa, 5 daqiqaga bloklanadi.
+- AI funksiyasi faqat amaldagi admin sessiyasi bilan ishlaydi.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Buyruqlar
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+| Buyruq | Vazifasi |
+| --- | --- |
+| `npm test` | Unit, UI va baza testlari (baza testlari PGlite'da, haqiqiy Postgres) |
+| `npm run lint` | ESLint |
+| `npm run build` | Production build (`build/`) |
 
-## Learn More
+## Deploy (Netlify)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Sozlamalar `netlify.toml` da. Netlify environment variables: `GEMINI_API_KEY` (secret),
+ixtiyoriy `GEMINI_MODEL` (standart: `gemini-flash-lite-latest`).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Tuzilma
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```
+src/
+  pages/            sahifalar (o'quvchi va admin/)
+  components/       ui/, layout/, auth/, student/, quiz/, admin/
+  hooks/            ma'lumot va test jarayoni hook'lari
+  lib/              API qatlami, sessiya, yordamchi funksiyalar
+  context/          o'quvchi va admin sessiyalari
+supabase/
+  migrations/       baza sxemasi va RPC funksiyalar
+  tests/            migratsiya testlari
+netlify/functions/  AI savol generatori
+```

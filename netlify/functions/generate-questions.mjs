@@ -1,6 +1,9 @@
 // Netlify Function: Gemini yordamida test savollarini yaratadi.
 // API kalit faqat serverda turadi (Netlify env: GEMINI_API_KEY) va brauzerga chiqmaydi.
+// Faqat haqiqiy admin sessiyasi bilan ishlaydi, aks holda begonalar bepul limitni sarflab qo'yadi.
 // Manzil: POST /.netlify/functions/generate-questions
+
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from "../../src/lib/supabaseConfig.js";
 
 const MODEL = process.env.GEMINI_MODEL || "gemini-flash-lite-latest";
 const MAX_PER_REQUEST = 10;
@@ -21,7 +24,7 @@ const LANGUAGE_TEXT = {
 };
 
 // AI to'g'ri javob o'rnini tanlamaydi: faqat to'g'ri va 3 ta noto'g'ri javob qaytaradi.
-// A/B/C/D bo'yicha joylashtirishni frontend o'zi teng taqsimlab qiladi.
+// Variantlarni frontend aralashtiradi.
 const RESPONSE_SCHEMA = {
   type: "object",
   properties: {
@@ -39,8 +42,9 @@ const RESPONSE_SCHEMA = {
             maxItems: 3,
           },
           difficulty: { type: "string", enum: ["easy", "medium", "hard"] },
+          explanation: { type: "string" },
         },
-        required: ["question", "correctAnswer", "wrongAnswers", "difficulty"],
+        required: ["question", "correctAnswer", "wrongAnswers", "difficulty", "explanation"],
       },
     },
   },
@@ -71,6 +75,7 @@ function buildPrompt({ topic, count, difficulty, language, notes, avoid }) {
     `- Do not put letters or numbering (A, B, 1.) in front of answers.`,
     `- Code snippets are allowed inline using backticks.`,
     `- Facts must be accurate; double-check the correct answer.`,
+    `- "explanation": 1–2 short, simple sentences in the same language explaining why the correct answer is right.`,
     avoid.length > 0 &&
       `- Do NOT repeat or rephrase these already generated questions:\n${avoid
         .map((q) => `  * ${q}`)
@@ -78,6 +83,22 @@ function buildPrompt({ topic, count, difficulty, language, notes, avoid }) {
   ]
     .filter(Boolean)
     .join("\n");
+}
+
+async function isAdminSession(token) {
+  if (typeof token !== "string" || !token) return false;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/verify_admin`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY },
+      body: JSON.stringify({ p_token: token }),
+      signal: AbortSignal.timeout(5000),
+    });
+    return res.ok && (await res.json()) === true;
+  } catch (err) {
+    console.error("Admin session check failed", err);
+    return false;
+  }
 }
 
 function clean(text) {
@@ -98,6 +119,7 @@ function sanitize(rawQuestions) {
       difficulty: ["easy", "medium", "hard"].includes(q?.difficulty)
         ? q.difficulty
         : "medium",
+      explanation: clean(q?.explanation).slice(0, 400),
     }))
     .filter((q) => {
       if (!q.question || !q.correctAnswer || q.wrongAnswers.length !== 3)
@@ -120,6 +142,9 @@ export default async (req) => {
   } catch {
     return json({ error: "Noto'g'ri so'rov" }, 400);
   }
+
+  if (!(await isAdminSession(body.adminToken)))
+    return json({ error: "Admin sessiyasi tugagan, qaytadan kiring" }, 401);
 
   const topic = clean(body.topic).slice(0, 200);
   const count = Math.min(
